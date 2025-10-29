@@ -11,7 +11,7 @@ export const validate = (req, res, next) => {
 
 export const addToCartValidation = [
   body('productId').isInt({ min: 1 }).withMessage('Product ID must be a positive integer'),
-  body('quantity').isInt({ min: 1 }).withMessage('Quantity must be at least 1'),
+  body('quantity').isInt().withMessage('Quantity must be an integer'),
   validate,
 ];
 

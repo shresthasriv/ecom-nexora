@@ -40,14 +40,20 @@ router.post('/', addToCartValidation, asyncHandler(async (req, res) => {
 
   if (existingItemIndex > -1) {
     cart.items[existingItemIndex].quantity += quantity;
+
+    if (cart.items[existingItemIndex].quantity <= 0) {
+      cart.items.splice(existingItemIndex, 1);
+    }
   } else {
-    cart.items.push({
-      productId: product.id,
-      title: product.title,
-      price: product.price,
-      quantity,
-      image: product.image,
-    });
+    if (quantity > 0) {
+      cart.items.push({
+        productId: product.id,
+        title: product.title,
+        price: product.price,
+        quantity,
+        image: product.image,
+      });
+    }
   }
 
   await cart.save();
@@ -59,6 +65,7 @@ router.post('/', addToCartValidation, asyncHandler(async (req, res) => {
       cartId: cart._id,
       items: cart.items,
       total: cart.calculateTotal(),
+      itemCount: cart.items.reduce((sum, item) => sum + item.quantity, 0),
     },
   });
 }));
@@ -86,6 +93,7 @@ router.delete('/:id', idParamValidation, asyncHandler(async (req, res) => {
       cartId: cart._id,
       items: cart.items,
       total: cart.calculateTotal(),
+      itemCount: cart.items.reduce((sum, item) => sum + item.quantity, 0),
     },
   });
 }));
